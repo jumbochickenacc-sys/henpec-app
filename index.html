@@ -5057,34 +5057,46 @@ function sbHeaders(extra) {
 
 // ── AUTH: Sign Up ─────────────────────────────────────────────────────
 async function sbSignUp(email, password) {
-  var res = await fetch(SB_URL + '/auth/v1/signup', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, password: password })
-  });
-  var data = await res.json();
-  if (!res.ok) return { data: null, error: data };
-  if (data.access_token) {
-    _authToken = data.access_token;
-    _refreshToken = data.refresh_token;
-    localStorage.setItem('henpec_session', JSON.stringify({ access_token: data.access_token, refresh_token: data.refresh_token, user: data.user }));
+  try {
+    var res = await fetch(SB_URL + '/auth/v1/signup', {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json', 'X-Client-Info': 'henpec-app' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    var data = await res.json();
+    if (!res.ok) return { data: null, error: data };
+    if (data.access_token) {
+      _authToken = data.access_token;
+      _refreshToken = data.refresh_token;
+      localStorage.setItem('henpec_session', JSON.stringify({ access_token: data.access_token, refresh_token: data.refresh_token, user: data.user }));
+    }
+    return { data: { user: data.user || data }, error: null };
+  } catch(e) {
+    console.error('sbSignUp network error:', e);
+    return { data: null, error: { message: 'Connection failed. Please go to Supabase dashboard > Authentication > URL Configuration and set Site URL to: https://jumbochickenacc-sys.github.io' } };
   }
-  return { data: { user: data.user || data }, error: null };
 }
 
 // ── AUTH: Sign In ─────────────────────────────────────────────────────
 async function sbSignIn(email, password) {
-  var res = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
-    method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, password: password })
-  });
-  var data = await res.json();
-  if (!res.ok) return { data: null, error: { message: data.error_description || data.msg || 'Invalid email or password' } };
-  _authToken = data.access_token;
-  _refreshToken = data.refresh_token;
-  localStorage.setItem('henpec_session', JSON.stringify({ access_token: data.access_token, refresh_token: data.refresh_token, user: data.user }));
-  return { data: { user: data.user, session: data }, error: null };
+  try {
+    var res = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json', 'X-Client-Info': 'henpec-app' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    var data = await res.json();
+    if (!res.ok) return { data: null, error: { message: data.error_description || data.msg || 'Invalid email or password' } };
+    _authToken = data.access_token;
+    _refreshToken = data.refresh_token;
+    localStorage.setItem('henpec_session', JSON.stringify({ access_token: data.access_token, refresh_token: data.refresh_token, user: data.user }));
+    return { data: { user: data.user, session: data }, error: null };
+  } catch(e) {
+    console.error('sbSignIn network error:', e);
+    return { data: null, error: { message: 'Connection failed. Please check your internet and try again.' } };
+  }
 }
 
 // ── AUTH: Sign Out ────────────────────────────────────────────────────
@@ -5524,7 +5536,7 @@ function sb(table,method,body,query){
   var h={"apikey":SB_KEY,"Authorization":"Bearer "+(_authToken||SB_KEY),"Content-Type":"application/json"};
   if(method==="POST")h["Prefer"]="return=representation";
   if(method==="PATCH"||method==="DELETE")h["Prefer"]="return=minimal";
-  var opts={method:method||"GET",headers:h};
+  var opts={method:method||"GET",headers:h,mode:'cors'};
   if(body)opts.body=JSON.stringify(body);
   return fetch(url,opts).then(function(r){
     return r.text().then(function(t){
@@ -6019,7 +6031,7 @@ async function checkExistingSession() {
     }
     setConnUI(true, "✓ Connected · Ready to sign in");
   } catch(e) {
-    setConnUI(null, "⚠ Check your internet connection");
+    setConnUI(null, "⚠ Supabase connection failed — go to supabase.com > Auth > URL Configuration > set Site URL to https://jumbochickenacc-sys.github.io");
     console.error("Session check error:", e);
   }
 }
