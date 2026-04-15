@@ -3048,7 +3048,7 @@ td{border-color:var(--bdr)!important;color:var(--t1)!important;}
   <div class="topbar">
     <div class="topbar-left">
       <div class="topbar-logo">🐔</div>
-      <div class="topbar-name" id="topbarNameEl">HEN<span>PEC</span> <span style="font-size:0.6rem;color:var(--text3);font-weight:400" id="topbarShopEl">Foods</span></div>
+      <div class="topbar-name" id="topbarNameEl"><span id="topbarBrandEl">MY</span><span id="topbarShopEl" style="color:var(--accent)">SHOP</span></div>
     </div>
     <div class="topbar-right" style="display:flex;align-items:center;gap:6px">
       <div class="icon-btn" id="voiceBtn" onclick="startVoice()" title="Voice" style="position:relative;z-index:9999">&#127897;</div>
@@ -3103,7 +3103,7 @@ td{border-color:var(--bdr)!important;color:var(--t1)!important;}
 <!-- COMMAND HERO -->
 <div class="cmd-hero">
   <div class="hero-toprow">
-    <div><div class="hero-day" id="hDay">Thursday</div><div class="hero-date" id="hDate">19.03.2026</div></div>
+    <div><div class="hero-day" id="hDay">—</div><div class="hero-date" id="hDate">—</div></div>
     <div class="hero-pills" id="hPills"></div>
   </div>
   <div class="hero-profit-block">
@@ -6219,7 +6219,12 @@ async function doLogin() {
     _loginFails = 0;
 
     var sn = document.getElementById("topbarShopEl");
-    if (sn) sn.textContent = currentShop.shop_name || "Foods";
+    var bn = document.getElementById("topbarBrandEl");
+    if (sn && currentShop.shop_name) {
+      var parts = currentShop.shop_name.trim().split(' ');
+      if (bn) { bn.textContent = parts[0] || ''; }
+      if (sn) { sn.textContent = parts.length > 1 ? ' ' + parts.slice(1).join(' ') : ''; }
+    }
     localStorage.setItem("hr_company_settings", JSON.stringify({
       name: currentShop.shop_name||"My Business", tagline:"", phone:currentShop.phone||""
     }));
@@ -7351,7 +7356,7 @@ function previewSalarySlip(){
 '<div style="background:linear-gradient(135deg,#1a237e 0%,#283593 60%,#3949ab 100%);padding:22px 28px 18px;display:flex;align-items:flex-start;justify-content:space-between">'+
 '<div style="display:flex;align-items:flex-start;gap:14px">'+
 (cs.logo?'<img src="'+cs.logo+'" style="width:56px;height:56px;border-radius:8px;object-fit:contain;background:#fff;padding:4px;flex-shrink:0;border:2px solid rgba(255,255,255,0.3)">':'<div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.6rem">🐔</div>')+
-'<div><div style="font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-0.02em">'+esc(cs.name||"HENPEC Foods")+'</div>'+
+'<div><div style="font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-0.02em">'+esc(cs.name||getCompanySettings().name||"Your Business")+'</div>'+
 (cs.tagline?'<div style="font-size:0.7rem;color:rgba(255,255,255,0.75);margin-top:2px">'+esc(cs.tagline)+'</div>':'')+
 (cs.address?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.6);margin-top:4px">'+esc(cs.address)+'</div>':'')+
 (cs.phone?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.6)">Ph: '+esc(cs.phone)+'</div>':'')+
@@ -7429,7 +7434,7 @@ payRows.map(function(p){return'<tr><td style="padding:6px 10px;border:1px solid 
 '</div>'+
 
 '<div style="background:#f5f5f5;border-top:1px solid #ddd;padding:7px 28px;text-align:center;font-size:0.52rem;color:#aaa">'+
-'Computer generated salary slip &bull; '+esc(cs.name||"HENPEC Foods")+' &bull; Generated: '+today+
+'Computer generated salary slip &bull; '+esc(cs.name||getCompanySettings().name||"Your Business")+' &bull; Generated: '+today+
 '</div></div>';
 
       preview.style.display="block";
@@ -8480,7 +8485,7 @@ function backupAllData() {
   showBackupProgress('Exporting data...', 'Reading tables from database', 5);
   var fetches = BACKUP_TABLES.map(function(t) { return sb(t.table, 'GET', null, t.query); });
   Promise.all(fetches).then(function(results) {
-    var backup = { version: '5.5', exported_at: new Date().toISOString(), app: 'HR Payroll - HENPEC Anachal', cashbook: getAllCashBookData(), wa_reminders: JSON.parse(localStorage.getItem('hr_wa_reminders')||'{}'), stock_register: JSON.parse(localStorage.getItem('hr_stock_register')||'{}') };
+    var backup = { version: '5.5', exported_at: new Date().toISOString(), app: getCompanySettings().name+' - HR Backup', cashbook: getAllCashBookData(), wa_reminders: JSON.parse(localStorage.getItem('hr_wa_reminders')||'{}'), stock_register: JSON.parse(localStorage.getItem('hr_stock_register')||'{}') };
     var totalRecords = 0;
     BACKUP_TABLES.forEach(function(t, i) {
       backup[t.key] = results[i] || [];
@@ -10146,10 +10151,10 @@ function downloadCustTemplate() {
   var wb = XLSX.utils.book_new();
   var data = [
     ['Shop Name','Name','Phone','Address','Opening Balance','Current Balance','Credit Policy','Credit Days'],
-    ['Raju Hotel','Raju Kumar','9876543210','Main Road, Anachal','5000','4200','weekly','7'],
-    ['Fresh Mart','Suresh Nair','9123456789','Market Junction, Kalady','0','0','monthly','30'],
-    ['Green Kitchen','Anil Kumar','8877665544','Near Bus Stand','2500','2500','bill','1'],
-    ['Morning Star','Lijo Mathew','9988776655','Church Road','0','1800','ready','0'],
+    ['Hotel Example','Owner Name','9876543210','Main Road, Your Town','5000','4200','weekly','7'],
+    ['Shop Example','Contact Name','9123456789','Market Junction','0','0','monthly','30'],
+    ['Restaurant XYZ','Manager Name','8877665544','Near Bus Stand','2500','2500','bill','1'],
+    ['Retail Store','Owner Name','9988776655','Church Road','0','1800','ready','0'],
   ];
   var ws = XLSX.utils.aoa_to_sheet(data);
   ws['!cols'] = [{wch:20},{wch:18},{wch:14},{wch:28},{wch:16},{wch:16},{wch:16},{wch:12}];
@@ -11751,7 +11756,7 @@ function getMessageTemplates(cust, bal, info) {
       + (days > 0 ? ' (*' + days + ' \u0d26\u0d3f\u0d35\u0d38\u0d02 \u0d15\u0d34\u0d3f\u0d1e\u0d4d\u0d1e\u0d41*)' : '') + '.\n\n'
       + '\u0d26\u0d2f\u0d35\u0d3e\u0d2f\u0d3f \u0d0e\u0d31\u0d4d\u0d31\u0d35\u0d41\u0d02 \u0d35\u0d47\u0d17\u0d02 \u0d2a\u0d23\u0d02 \u0d05\u0d1f\u0d2f\u0d4d\u0d15\u0d4d\u0d15\u0d41\u0d15.\n\n'
       + '\u0d28\u0d28\u0d4d\u0d26\u0d3f 🙏\n'
-      + '_HENPEC Foods - \u0d05\u0d28\u0d1a\u0d4d\u0d1a\u0d3e\u0d32\u0d4d \u0d37\u0d4b\u0d2a\u0d4d\u0d2a\u0d4d_'
+      + '_'+(getCompanySettings().name||'My Shop')+'_'
   };
 }
 
@@ -11936,9 +11941,9 @@ function downloadSaleTemplate() {
   var wb = XLSX.utils.book_new();
   var data = [
     ['Shop Name', 'Kg', 'Rate', 'Amount', 'Mode', 'Note'],
-    ['Raju Hotel', '25.5', '178', '4539', 'credit', ''],
+    ['Hotel Example', '25.5', '178', '4539', 'credit', ''],
     ['Fresh Mart', '12', '178', '2136', 'credit', ''],
-    ['Green Kitchen', '8.3', '178', '1477', 'credit', ''],
+    ['Restaurant XYZ', '8.3', '178', '1477', 'credit', ''],
     ['Suresh', '5', '178', '890', 'cash', 'Walk-in retail'],
     ['', '3', '180', '540', 'cash', 'Walk-in no name'],
     ['Anand', '10', '178', '1780', 'upi', 'GPay payment'],
@@ -13368,7 +13373,7 @@ function downloadPurchaseTemplate() {
     ['2026-02-01', 'Monday', '436.90', '178', '304.75', '483.51', '0.90'],
     ['2026-02-02', 'Tuesday', '507.80', '178', '257.24', '290.47', '0.80'],
     ['2026-02-03', 'Wednesday', '225.20', '178', '473.77', '308.10', '1.10'],
-    ['2026-02-04', 'Thursday', '304.80', '178', '389.77', '396.02', '0.95'],
+    ['YYYY-MM-DD', 'Monday', '100', '180', '200', '180', '0'],
     ['2026-02-05', 'Friday', '357.00', '178', '297.60', '216.78', '0.90'],
   ];
   var ws = XLSX.utils.aoa_to_sheet(data);
@@ -14580,7 +14585,7 @@ function openCompanySettings() {
 
   + '<div class="cs-field-grid">'
   + '<div class="form-group"><label class="form-label">Company / Shop Name</label><input class="form-input" id="cs-name" value="'+esc(s.name)+'" placeholder="e.g. HENPEC Foods" oninput="updateCSPreview()"></div>'
-  + '<div class="form-group"><label class="form-label">Tagline / Branch</label><input class="form-input" id="cs-tagline" value="'+esc(s.tagline)+'" placeholder="e.g. Anachal Shop" oninput="updateCSPreview()"></div>'
+  + '<div class="form-group"><label class="form-label">Tagline / Branch</label><input class="form-input" id="cs-tagline" value="'+esc(s.tagline)+'" placeholder="e.g. Branch / Location" oninput="updateCSPreview()"></div>'
   + '</div>'
 
   + '<div class="form-group"><label class="form-label">Full Address</label><input class="form-input" id="cs-address" value="'+esc(s.address)+'" placeholder="Street, Area, City, PIN"></div>'
@@ -15712,7 +15717,7 @@ function backupAllData() {
   showBackupProgress('Exporting data...', 'Reading tables from database', 5);
   var fetches = BACKUP_TABLES.map(function(t) { return sb(t.table, 'GET', null, t.query); });
   Promise.all(fetches).then(function(results) {
-    var backup = { version: '5.5', exported_at: new Date().toISOString(), app: 'HR Payroll - HENPEC Anachal', cashbook: getAllCashBookData(), wa_reminders: JSON.parse(localStorage.getItem('hr_wa_reminders')||'{}'), stock_register: JSON.parse(localStorage.getItem('hr_stock_register')||'{}') };
+    var backup = { version: '5.5', exported_at: new Date().toISOString(), app: getCompanySettings().name+' - HR Backup', cashbook: getAllCashBookData(), wa_reminders: JSON.parse(localStorage.getItem('hr_wa_reminders')||'{}'), stock_register: JSON.parse(localStorage.getItem('hr_stock_register')||'{}') };
     var totalRecords = 0;
     BACKUP_TABLES.forEach(function(t, i) {
       backup[t.key] = results[i] || [];
@@ -17270,9 +17275,9 @@ function downloadCustTemplate() {
   var wb = XLSX.utils.book_new();
   var data = [
     ['Shop Name', 'Name', 'Phone', 'Address', 'Opening Balance', 'Credit Policy', 'Credit Days'],
-    ['Raju Hotel', 'Raju Kumar', '9876543210', 'Main Road, Anachal', '5000', 'weekly', '7'],
-    ['Fresh Mart', 'Suresh', '9123456789', 'Market Junction', '0', 'monthly', '30'],
-    ['Green Kitchen', 'Anil', '8877665544', 'Near Bus Stand', '2500', 'bill', '1']
+    ['Hotel Example', 'Owner Name', '9876543210', 'Main Road, Your Town', '5000', 'weekly', '7'],
+    ['Shop Example', 'Contact Name', '9123456789', 'Market Junction', '0', 'monthly', '30'],
+    ['Restaurant XYZ', 'Manager Name', '8877665544', 'Near Bus Stand', '2500', 'bill', '1']
   ];
   var ws = XLSX.utils.aoa_to_sheet(data);
   ws['!cols'] = [{wch:20},{wch:18},{wch:14},{wch:25},{wch:16}];
@@ -17962,7 +17967,7 @@ function getMessageTemplates(cust, bal, info) {
       + (days > 0 ? ' (*' + days + ' \u0d26\u0d3f\u0d35\u0d38\u0d02 \u0d15\u0d34\u0d3f\u0d1e\u0d4d\u0d1e\u0d41*)' : '') + '.\n\n'
       + '\u0d26\u0d2f\u0d35\u0d3e\u0d2f\u0d3f \u0d0e\u0d31\u0d4d\u0d31\u0d35\u0d41\u0d02 \u0d35\u0d47\u0d17\u0d02 \u0d2a\u0d23\u0d02 \u0d05\u0d1f\u0d2f\u0d4d\u0d15\u0d4d\u0d15\u0d41\u0d15.\n\n'
       + '\u0d28\u0d28\u0d4d\u0d26\u0d3f 🙏\n'
-      + '_HENPEC Foods - \u0d05\u0d28\u0d1a\u0d4d\u0d1a\u0d3e\u0d32\u0d4d \u0d37\u0d4b\u0d2a\u0d4d\u0d2a\u0d4d_'
+      + '_'+(getCompanySettings().name||'My Shop')+'_'
   };
 }
 
@@ -18147,9 +18152,9 @@ function downloadSaleTemplate() {
   var wb = XLSX.utils.book_new();
   var data = [
     ['Shop Name', 'Kg', 'Rate', 'Amount', 'Mode', 'Note'],
-    ['Raju Hotel', '25.5', '178', '4539', 'credit', ''],
+    ['Hotel Example', '25.5', '178', '4539', 'credit', ''],
     ['Fresh Mart', '12', '178', '2136', 'credit', ''],
-    ['Green Kitchen', '8.3', '178', '1477', 'credit', ''],
+    ['Restaurant XYZ', '8.3', '178', '1477', 'credit', ''],
     ['Suresh', '5', '178', '890', 'cash', 'Walk-in retail'],
     ['', '3', '180', '540', 'cash', 'Walk-in no name'],
     ['Anand', '10', '178', '1780', 'upi', 'GPay payment'],
@@ -19555,7 +19560,7 @@ function downloadPurchaseTemplate() {
     ['2026-02-01', 'Monday', '436.90', '178', '304.75', '483.51', '0.90'],
     ['2026-02-02', 'Tuesday', '507.80', '178', '257.24', '290.47', '0.80'],
     ['2026-02-03', 'Wednesday', '225.20', '178', '473.77', '308.10', '1.10'],
-    ['2026-02-04', 'Thursday', '304.80', '178', '389.77', '396.02', '0.95'],
+    ['YYYY-MM-DD', 'Monday', '100', '180', '200', '180', '0'],
     ['2026-02-05', 'Friday', '357.00', '178', '297.60', '216.78', '0.90'],
   ];
   var ws = XLSX.utils.aoa_to_sheet(data);
@@ -20767,7 +20772,7 @@ function openCompanySettings() {
 
   + '<div class="cs-field-grid">'
   + '<div class="form-group"><label class="form-label">Company / Shop Name</label><input class="form-input" id="cs-name" value="'+esc(s.name)+'" placeholder="e.g. HENPEC Foods" oninput="updateCSPreview()"></div>'
-  + '<div class="form-group"><label class="form-label">Tagline / Branch</label><input class="form-input" id="cs-tagline" value="'+esc(s.tagline)+'" placeholder="e.g. Anachal Shop" oninput="updateCSPreview()"></div>'
+  + '<div class="form-group"><label class="form-label">Tagline / Branch</label><input class="form-input" id="cs-tagline" value="'+esc(s.tagline)+'" placeholder="e.g. Branch / Location" oninput="updateCSPreview()"></div>'
   + '</div>'
 
   + '<div class="form-group"><label class="form-label">Full Address</label><input class="form-input" id="cs-address" value="'+esc(s.address)+'" placeholder="Street, Area, City, PIN"></div>'
@@ -21572,9 +21577,9 @@ function downloadWasteTemplate(){
   var wb = XLSX.utils.book_new();
   var ws = XLSX.utils.aoa_to_sheet([
     ['Date','Kg','Rate','Amount','Cash','GPay','Total Received','Daily Balance','Running Balance'],
-    ['1-Feb-2026','130','5','650','0','0','0','650','25642.50'],
-    ['2-Feb-2026','75','5','375','5000','0','5000','-4625','21017.50'],
-    ['3-Feb-2026','87','5','435','0','0','0','435','21452.50'],
+    ['1-Jan-2026','100','5','500','0','0','0','500','500.00'],
+    ['2-Jan-2026','80','5','400','500','0','500','-100','400.00'],
+    ['3-Jan-2026','90','5','450','0','0','0','450','850.00'],
   ]);
   ws['!cols'] = [{wch:14},{wch:8},{wch:6},{wch:10},{wch:8},{wch:8},{wch:14},{wch:14},{wch:16}];
   XLSX.utils.book_append_sheet(wb, ws, 'Waste Register');
@@ -21635,7 +21640,7 @@ function exportWasteExcel(){
 function exportWastePDF(){
   if(!_wmWasteData.length&&!_wmPayData.length){ showToast('No data to export', true); return; }
   var cs = typeof getCompanySettings==='function' ? getCompanySettings() : {};
-  var company = cs.name || 'HENPEC Foods';
+  var company = cs.name || getCompanySettings().name || 'Your Business';
 
   var totalWaste = _wmWasteData.reduce(function(s,r){return s+(r.amount||0);},0);
   var totalPaid  = _wmPayData.reduce(function(s,r){return s+(r.amount||0);},0);
@@ -22914,9 +22919,9 @@ function waBuildMsg(isWholesale){
     var wsWhole    = whole    !== '—' ? Math.max(0, parseInt(whole)    - 12) : '—';
     var wsCurry    = curry    !== '—' ? Math.max(0, parseInt(curry)    - 12) : '—';
     var wsBoneless = boneless !== '—' ? Math.max(0, parseInt(boneless) - 12) : '—';
-    return '🐔 *HENPEC Foods — Anachal*\n📅 ' + today + ' | ' + note + ' ✅\n\n💰 *Wholesale Rates:*\nWhole chicken: ₹' + wsWhole + '/Kg\nCurry cut: ₹' + wsCurry + '/Kg\nBoneless: ₹' + wsBoneless + '/Kg\nLiver: ₹' + liver + '/Kg\nEggs: ₹' + egg + ' each\n\n📦 Pre-orders welcome — reply with quantity\n⏰ Delivery/pickup by 12 PM\n📞 Anachal Shop';
+    return '🐔 *'+(getCompanySettings().name||'My Shop')+'*\n📅 ' + today + ' | ' + note + ' ✅\n\n💰 *Wholesale Rates:*\nWhole chicken: ₹' + wsWhole + '/Kg\nCurry cut: ₹' + wsCurry + '/Kg\nBoneless: ₹' + wsBoneless + '/Kg\nLiver: ₹' + liver + '/Kg\nEggs: ₹' + egg + ' each\n\n📦 Pre-orders welcome — reply with quantity\n⏰ Delivery/pickup by 12 PM\n📞 Anachal Shop';
   }
-  return '🐔 *HENPEC Foods — Anachal*\n📅 ' + today + ' | ' + note + ' ✅\n\n💰 *Today\'s Rates:*\nWhole chicken: ₹' + whole + '/Kg\nCurry cut: ₹' + curry + '/Kg\nBoneless: ₹' + boneless + '/Kg\nLiver: ₹' + liver + '/Kg\nEggs: ₹' + egg + ' each\n\n📦 Pre-orders: reply with name + quantity\n⏰ Open 6 AM – 8 PM\n✅ Always fresh — direct from farm';
+  return '🐔 *'+(getCompanySettings().name||'My Shop')+'*\n📅 ' + today + ' | ' + note + ' ✅\n\n💰 *Today\'s Rates:*\nWhole chicken: ₹' + whole + '/Kg\nCurry cut: ₹' + curry + '/Kg\nBoneless: ₹' + boneless + '/Kg\nLiver: ₹' + liver + '/Kg\nEggs: ₹' + egg + ' each\n\n📦 Pre-orders: reply with name + quantity\n⏰ Open 6 AM – 8 PM\n✅ Always fresh — direct from farm';
 }
 
 // ── Refresh preview ────────────────────────────────────────────────
