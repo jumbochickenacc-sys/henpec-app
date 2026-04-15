@@ -3145,8 +3145,8 @@ td{border-color:var(--bdr)!important;color:var(--t1)!important;}
 <!-- AI DECISIONS -->
 <div class="sec-div"><div class="sdl">AI Decision Engine</div><div class="sdline"></div></div>
 <div class="panel">
-  <div class="panel-header"><div class="ph-badge">AI</div><div class="ph-title">3 Actions Needing Attention</div><div class="ph-sub" id="aiTime"></div></div>
-  <div id="aiDecs"></div>
+  <div class="panel-header"><div class="ph-badge">AI</div><div class="ph-title" id="aiDecsTitle">Loading actions…</div><div class="ph-sub" id="aiTime"></div></div>
+  <div id="aiDecs"><div class="ai-row" style="--rc:var(--text3)"><div class="ar-ico">⏳</div><div class="ar-body"><div class="ar-type">LOADING</div><div class="ar-title">Loading your business data…</div><div class="ar-detail">Add stock entries and sales from the P&L tab to see AI recommendations.</div></div></div></div>
 </div>
 
 <!-- MONTH PROJECTION -->
@@ -3154,8 +3154,8 @@ td{border-color:var(--bdr)!important;color:var(--t1)!important;}
 <div class="panel">
   <div class="panel-header"><div class="ph-badge">FORECAST</div><div class="ph-title">Month-End Profit Prediction</div><div style="font-family:var(--font-data);font-size:.46rem;color:var(--text3);background:var(--grn2);color:var(--grn);padding:2px 7px;border-radius:4px">Based on real data</div></div>
   <div class="proj-big" id="projBig">&#8377;0</div>
-  <div class="proj-sub" id="projSub">Projected profit by month end</div>
-  <div class="proj-bar-wrap"><div class="proj-bar" id="projBar" style="width:58%"></div></div>
+  <div class="proj-sub" id="projSub">Add stock entries to see forecast</div>
+  <div class="proj-bar-wrap"><div class="proj-bar" id="projBar" style="width:0%"></div></div>
   <div class="proj-bar-lbl"><span>&#8377;0</span><span id="projTgt">Add sales to see target</span></div>
   <div class="proj-grid" id="projGrid"></div>
 </div>
@@ -3163,7 +3163,7 @@ td{border-color:var(--bdr)!important;color:var(--t1)!important;}
 <!-- AUTO HIGHLIGHTS -->
 <div class="sec-div"><div class="sdl">Auto Highlights</div><div class="sdline"></div></div>
 <div class="panel" style="overflow:visible;border:none;background:transparent;box-shadow:none;padding:0">
-  <div class="hl-scroll" id="hlScroll"></div>
+  <div class="hl-scroll" id="hlScroll"><div style="padding:12px;font-size:.68rem;color:var(--t3)">No highlights yet — add sales data to see auto insights</div></div>
 </div>
 
 <!-- STAFF -->
@@ -3174,7 +3174,7 @@ td{border-color:var(--bdr)!important;color:var(--t1)!important;}
     <div style="text-align:right"><div class="att-cnt"><span id="attP">0</span><span style="font-size:.55rem;color:var(--text3);font-weight:400">/</span><span id="attT">0</span></div><div style="font-family:var(--font-data);font-size:.44rem;color:var(--text3)">Present</div></div>
   </div>
   <div class="att-seg-bar"><div class="att-seg" id="aS1" style="background:var(--grn)"></div><div class="att-seg" id="aS2" style="background:var(--org)"></div><div class="att-seg" id="aS3" style="background:var(--red)"></div></div>
-  <div class="emp-chips" id="empChips"></div>
+  <div class="emp-chips" id="empChips"><div style="font-size:.62rem;color:var(--t3);padding:4px 0">Mark attendance to see staff status</div></div>
 </div>
 
 <!-- SALARY -->
@@ -3184,22 +3184,22 @@ td{border-color:var(--bdr)!important;color:var(--t1)!important;}
     <div><div style="font-family:var(--font-display);font-size:.78rem;font-weight:800">This Month Salary</div><div style="font-family:var(--font-data);font-size:.5rem;color:var(--text2);margin-top:2px">Auto-calculated from attendance</div></div>
     <div style="text-align:right"><div style="font-family:var(--font-data);font-size:.46rem;color:var(--text3);letter-spacing:.07em">TOTAL DUE</div><div class="salary-total" id="salTot">&#8377;0</div></div>
   </div>
-  <div class="salary-rows" id="salRows"></div>
+  <div class="salary-rows" id="salRows"><div style="text-align:center;padding:12px;font-size:.68rem;color:var(--t3)">No employees added yet</div></div>
 </div>
 
 <!-- CUSTOMER RISK -->
 <div class="sec-div"><div class="sdl">Customer Risk Scores</div><div class="sdline"></div></div>
 <div class="panel">
   <div class="risk-header"><div class="rh-lbl">Customer</div><div class="rh-lbl">Risk</div><div class="rh-lbl" style="text-align:right">Due</div><div></div></div>
-  <div id="riskRows"></div>
+  <div id="riskRows"><div style="text-align:center;padding:12px;font-size:.68rem;color:var(--t3)">No customer dues</div></div>
   <div class="risk-banner" id="riskBanner"></div>
 </div>
 
 <!-- TOMORROW -->
 <div class="sec-div"><div class="sdl">AI Tomorrow Forecast</div><div class="sdline"></div></div>
 <div class="panel">
-  <div class="pred-head"><div class="pred-badge">AI FORECAST</div><div class="pred-day-title">Tomorrow &mdash; <span id="predDay">Friday</span></div></div>
-  <div class="pred-cells" id="predCells"></div>
+  <div class="pred-head"><div class="pred-badge">AI FORECAST</div><div class="pred-day-title">Tomorrow &mdash; <span id="predDay">—</span></div></div>
+  <div class="pred-cells" id="predCells"><div style="text-align:center;padding:12px;font-size:.68rem;color:var(--t3)">Add today's sales to see tomorrow's forecast</div></div>
   <div class="pred-reason" id="predReason"></div>
 </div>
 
@@ -13374,7 +13374,7 @@ function downloadPurchaseTemplate() {
     ['2026-02-02', 'Tuesday', '507.80', '178', '257.24', '290.47', '0.80'],
     ['2026-02-03', 'Wednesday', '225.20', '178', '473.77', '308.10', '1.10'],
     ['YYYY-MM-DD', 'Monday', '100', '180', '200', '180', '0'],
-    ['2026-02-05', 'Friday', '357.00', '178', '297.60', '216.78', '0.90'],
+    ['YYYY-MM-DD', 'Monday', '100', '180', '200', '180', '0'],
   ];
   var ws = XLSX.utils.aoa_to_sheet(data);
   ws['!cols'] = [{wch:14},{wch:12},{wch:14},{wch:8},{wch:18},{wch:10},{wch:12}];
@@ -15444,6 +15444,7 @@ function buildAIDecs(D,profit,margin,gpm){
   var tc=D.custs.reduce(function(m,c){return c.days>m.days?c:m;},D.custs[0]);
   rows.push({rc:'var(--org)',ico:'\ud83d\udcb8',type:'CASH RECOVERY',title:fmtK(tc.due)+' from '+tc.n.split(' ').slice(0,2).join(' ')+' \u2014 '+tc.days+'d overdue',detail:'Total outstanding \u20b9'+fmt(D.outstanding)+' across '+D.custs.length+' customers. Send WhatsApp reminder in 30 seconds.',cta:'\ud83d\udcf2 Send WA Now',badge:{t:tc.days+'D OVERDUE',c:'bg-org'}});
   rows.push(margin<15?{rc:'var(--blu)',ico:'\ud83d\udcc8',type:'PROFIT ADVICE',title:'Margin '+margin.toFixed(1)+'% \u2014 raise retail by \u20b9'+(Math.round((D.buy/0.85-D.retail)/5)*5),detail:'Buy \u20b9'+D.buy+'/Kg. To hit 20%, retail should be \u20b9'+Math.round(D.buy/0.8)+'. Try \u20b9'+(D.retail+5)+' tomorrow and watch sales volume.',cta:'\ud83d\udcca View P&L',badge:{t:'ACTION',c:'bg-blu'}}:{rc:'var(--pur)',ico:'\ud83c\udfc6',type:'ACHIEVEMENT',title:'Target exceeded! '+margin.toFixed(1)+'% margin today',detail:'Projected monthly profit: '+fmtK(profit*26)+'. Consider increasing daily order to 250 Kg.',cta:'\ud83d\udcca Expansion Plan',badge:{t:margin.toFixed(1)+'% \u2713',c:'bg-grn'}});
+  var _aiT=document.getElementById('aiDecsTitle');if(_aiT)_aiT.textContent=rows.length+' Action'+(rows.length===1?'':'s')+' Needing Attention';
   g('aiDecs').innerHTML=rows.map(function(r){return '<div class="ai-row" style="--rc:'+r.rc+'"><div class="ar-ico">'+r.ico+'</div><div class="ar-body"><div class="ar-type">'+r.type+'</div><div class="ar-title">'+r.title+'</div><div class="ar-detail">'+r.detail+'</div><div class="ar-cta">'+r.cta+' \u2192</div></div><div class="ar-side"><div class="ar-badge '+r.badge.c+'">'+r.badge.t+'</div></div></div>';}).join('');}
 
 function buildProj(D){
@@ -19561,7 +19562,7 @@ function downloadPurchaseTemplate() {
     ['2026-02-02', 'Tuesday', '507.80', '178', '257.24', '290.47', '0.80'],
     ['2026-02-03', 'Wednesday', '225.20', '178', '473.77', '308.10', '1.10'],
     ['YYYY-MM-DD', 'Monday', '100', '180', '200', '180', '0'],
-    ['2026-02-05', 'Friday', '357.00', '178', '297.60', '216.78', '0.90'],
+    ['YYYY-MM-DD', 'Monday', '100', '180', '200', '180', '0'],
   ];
   var ws = XLSX.utils.aoa_to_sheet(data);
   ws['!cols'] = [{wch:14},{wch:12},{wch:14},{wch:8},{wch:18},{wch:10},{wch:12}];
